@@ -1,0 +1,100 @@
+# spring配置
+spring: 
+  redis:
+    host: localhost
+    port: 6379
+    password: root
+  datasource:
+    druid:
+      stat-view-servlet:
+        enabled: true
+        loginUsername: admin
+        loginPassword: 123456
+    dynamic:
+      druid:
+        initial-size: 5
+        min-idle: 5
+        maxActive: 20
+        maxWait: 60000
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: SELECT 1 FROM DUAL
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxPoolPreparedStatementPerConnectionSize: 20
+        filters: stat,wall,slf4j
+        connectionProperties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+      datasource:
+        # 主库数据源
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/base-cloud?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+          username: root
+          password: root
+        # 从库数据源
+        # slave:
+          # username: 
+          # password: 
+          # url: 
+          # driver-class-name: 
+      # seata: true    # 开启seata代理，开启后默认每个数据源都代理，如果某个不需要代理可单独关闭
+
+# seata配置
+seata:
+  # 默认关闭，如需启用spring.datasource.dynami.seata需要同时开启
+  enabled: false
+  # Seata 应用编号，默认为 ${spring.application.name}
+  application-id: ${spring.application.name}
+  # Seata 事务组编号，用于 TC 集群名
+  tx-service-group: ${spring.application.name}-group
+  # 关闭自动代理
+  enable-auto-data-source-proxy: false
+  # 服务配置项
+  service:
+    # 虚拟组和分组的映射
+    vgroup-mapping:
+      ruoyi-system-group: default
+  config:
+    type: nacos
+    nacos:
+      serverAddr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      namespace:
+  registry:
+    type: nacos
+    nacos:
+      application: seata-server
+      server-addr: 127.0.0.1:8848
+      namespace:
+
+# mybatis配置
+# mybatis:
+    # 搜索指定包别名
+    # typeAliasesPackage: com.ruoyi.system
+    # 配置mapper的扫描，找到所有的mapper.xml映射文件
+    # mapperLocations: classpath:mapper/**/*.xml
+
+# mybatis-plus 配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/**/*.xml
+  # 分布id的选择
+  global-config:
+    db-config:
+      # ID 增长方式
+      id-type: auto
+      # 全局逻辑删除的实体字段名(since 3.3.0,配置后可以忽略不配置步骤2)
+      logic-delete-field: del_flag
+      # 逻辑已删除值(默认为 1)
+      logic-delete-value: '1'
+      # 逻辑未删除值(默认为 0)
+      logic-not-delete-value: '0'
+  # 给实体类起别名
+  type-aliases-package: com.ruoyi.system
+
+# swagger配置
+swagger:
+  title: 系统模块接口文档
+  license: Powered By ruoyi
+  licenseUrl: https://ruoyi.vip

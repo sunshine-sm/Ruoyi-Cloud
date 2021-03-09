@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+说明：
+  1. 文件的命名和加载顺序有关
+    logback.xml早于application.yml加载，logback-spring.xml晚于application.yml加载
+    如果logback配置需要使用application.yml中的属性，需要命名为logback-spring.xml
+  2. logback使用application.yml中的属性
+    使用springProperty才可使用application.yml中的值 可以设置默认值
+-->
+<configuration scan="true" scanPeriod="60 seconds">
+	<!-- log base path -->
+	<springProperty scope="context" name="LOG_FILE_PATH" source="logging.file.path" defaultValue="/pub/java/ruoyi/logs"/>
+	<!-- log base path -->
+	<springProperty scope="context" name="LOG_FILE_NAME" source="logging.file.name" defaultValue="ruoyi-job"/>
+
+	<!-- 日志目录 -->
+	<property name="LOG_HOME" value="${LOG_FILE_PATH}"/>
+	<!-- 日志文件名 -->
+	<property name="LOG_NAME" value="${LOG_FILE_NAME}"/>
+	<!-- log pattern -->
+	<property name="LOG_PATTERN" value="%d{yyyy-MM-dd} %d{HH:mm:ss.SSS} [%thread] %-5level %logger{20} - [%method,%line] - %msg%n" />
+	<!-- 文件切割大小 -->
+	<property name="maxFileSize" value="100MB" />
+	<!-- 文档保留天数 -->
+	<property name="maxHistory" value="60" />
+	<!-- 文档保留总大小 -->
+	<property name="totalSizeCap" value="10GB" />
+
+	<!-- 控制台输出 -->
+	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+	</appender>
+
+	<!-- 系统服务日志 -->
+	<appender name="DEBUG_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/${LOG_NAME}-debug.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${LOG_HOME}/backup/%d{yyyy-MM-dd}/${LOG_NAME}-debug.%i.log.gz</fileNamePattern>
+			<!-- 单个日志文件最多 100MB, 60天的日志周期，最大不能超过10GB -->
+			<maxFileSize>${maxFileSize}</maxFileSize>
+			<maxHistory>${maxHistory}</maxHistory>
+			<totalSizeCap>${totalSizeCap}</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>DEBUG</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/${LOG_NAME}-info.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${LOG_HOME}/backup/%d{yyyy-MM-dd}/${LOG_NAME}-info.%i.log.gz</fileNamePattern>
+			<!-- 单个日志文件最多 100MB, 60天的日志周期，最大不能超过10GB -->
+			<maxFileSize>${maxFileSize}</maxFileSize>
+			<maxHistory>${maxHistory}</maxHistory>
+			<totalSizeCap>${totalSizeCap}</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>INFO</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${LOG_HOME}/${LOG_NAME}-error.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+			<!-- daily rollover -->
+			<fileNamePattern>${LOG_HOME}/backup/%d{yyyy-MM-dd}/${LOG_NAME}-error.%i.log.gz</fileNamePattern>
+			<!-- 单个日志文件最多 100MB, 60天的日志周期，最大不能超过10GB -->
+			<maxFileSize>${maxFileSize}</maxFileSize>
+			<maxHistory>${maxHistory}</maxHistory>
+			<totalSizeCap>${totalSizeCap}</totalSizeCap>
+		</rollingPolicy>
+		<encoder>
+			<pattern>${LOG_PATTERN}</pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.LevelFilter">
+			<level>ERROR</level>
+			<onMatch>ACCEPT</onMatch>
+			<onMismatch>DENY</onMismatch>
+		</filter>
+	</appender>
+
+	<!--系统操作日志-->
+    <root level="info">
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="DEBUG_FILE" />
+        <appender-ref ref="INFO_FILE" />
+        <appender-ref ref="ERROR_FILE" />
+    </root>
+</configuration> 
